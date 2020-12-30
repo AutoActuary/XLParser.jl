@@ -6,6 +6,10 @@ version = "0.1.0"
 [compat]
 julia = "1"
 
+[deps]
+Tokenize = "0796e94c-ce3b-5d07-9a54-7f471281c624"
+Espresso = "6912e4f1-e036-58b0-9138-08d1e6358ea9"
+
 [extras]
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
