@@ -1,0 +1,4 @@
+"file name is ""c:\" & dirnamevariable & "\file.txt""" => raw"file name is \"c:\\" & dirnamevariable & raw"\file.txt\""
+"\" => raw"\\"
+"""" => raw"\""
+"\""" => raw"\\\""
