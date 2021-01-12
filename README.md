@@ -38,7 +38,7 @@ julia> ]
 If you are an Auto Actuary developer who needs to develop on this package,
 we recommend installing Julia through [Juliawin](https://github.com/heetbeet/juliawin).
 
-To add this package, enter pkg mode in Julia and install a dev environment:
+To add this package to your Julia installation, enter pkg mode in Julia and install a dev environment:
 ```
 julia> ] 
 (@v1.6) pkg> dev git@github.com:AutoActuary/XLParser.jl.git
@@ -49,6 +49,6 @@ now find the location of this local repo using:
 ```
 julia> using XLParser 
 
-julia> pathof(XLParser)
-"C:\\Users\\simon\\Juliawin-1.6\\userdata\\.julia\\dev\\XLParser\\src\\XLParser.jl" 
+julia> println(pathof(XLParser))
+C:\Users\simon\Juliawin-1.6\userdata\.julia\dev\XLParser\src\XLParser.jl 
 ```
