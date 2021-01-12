@@ -1,6 +1,7 @@
 module XLParser
     export @xlexpr_str
     export @xl_str
+    export xlexpr
 
     using Tokenize
     using Espresso
