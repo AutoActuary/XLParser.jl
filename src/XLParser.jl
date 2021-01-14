@@ -7,7 +7,7 @@ module XLParser
     using Espresso
 
     # we bait and switch string concatenation (ampersand in xl) with the pipe
-    # character, since it placed on the appropriate precedence level in Julia:
+    # character, since it is placed on the appropriate precedence level in Julia:
     # https://github.com/JuliaLang/julia/blob/master/src/julia-parser.scm
     dummy_ampersand = :(|>)
 
@@ -63,6 +63,7 @@ module XLParser
     function _sanitize_excel_formula_tokens(str)
         # ensure excel strings are converted to Julia syntax
         str = _sanitize_excel_formula_strings(str)
+        str = replace(str, "\n" => " ")
 
         tokens = collect(tokenize(str))
 
@@ -73,6 +74,11 @@ module XLParser
             if tokens[i].kind == Tokenize.Tokens.IDENTIFIER && tokens[i].val != lowercase(tokens[i].val)
                 tokens[i] = first(tokenize(lowercase(tokens[i].val)))
                 i-=1
+
+            # convert if KEYWORD token to xl_if function token
+            elseif tokens[i].kind == Tokenize.Tokens.IF
+                tokens[i] = first(tokenize("xl_if"))
+
 
             # convert <> to !=
             elseif (i != length(tokens) &&
@@ -130,19 +136,45 @@ module XLParser
 
 
     function xlexpr(str)
+        # turn string into a valid (but logically wrong) Julia expression
         parsable_string = _sanitize_excel_formula_tokens(str)
         xl = Meta.parse(parsable_string)
+
+        # now correct this logically wrong expression into a correct one
 
         # index syntax, eg: a[1:5]
         xl = rewrite_all(xl, :(index(_a,_b):index(_a,_d)), :(_a[_b:_d]))
         xl = rewrite_all(xl, :(index(_a,_b)), :(_a[_b]))
 
-        #TODO: test if index(_a,_b):index(_c,_d) exists and throw an error if so
+        #TODO: test expr contains index(_a,_b):index(_c,_d) and throw an error if so
+        xl = rewrite_all(xl, :(index(_a,_b):index(_a,_d)), :(_a[_b:_d]))
 
         # replace & infix with string function
         xl = rewrite_all(xl, dummy_ampersand, :(string))
         xl = rewrite_all(xl, :(string(string(_a...), _b)),
                              :(string(_a..., _b)))
+
+        # replace and(1,2,3) with 1 && (2 && 3)
+        while xl != (xl_new = rewrite_all(xl, :(and(_a, _b...)),
+                                              :(_a && and(_b...))))
+            xl = xl_new
+        end
+        xl = rewrite_all(xl, :(and(_a)), :(_a))
+
+
+        # replace or(1,2,3) with 1 || (2 || 3)
+        while xl != (xl_new = rewrite_all(xl, :(or(_a, _b...)),
+                                              :(_a || or(_b...))))
+            xl = xl_new
+        end
+        xl = rewrite_all(xl, :(or(_a)), :(_a))
+
+        # replace not(1) with !(1)
+        xl = rewrite_all(xl, :(not(_a)), :(!(_a)))
+
+        # replace excel if functions with julia if statements
+        xl = rewrite_all(xl, :(xl_if(_a,_b,_c)), :((_a ? _b : _c)))
+        xl = rewrite_all(xl, :(xl_if(_a,_b)), :((_a ? _b : false)))
 
         return xl
     end
