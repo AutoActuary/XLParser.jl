@@ -1,6 +1,6 @@
 using XLParser
 using Test
-
+using Espresso
 
 @testset "Sanitize Excel strings" begin
 
@@ -52,4 +52,10 @@ end
     @test xl"Q() & true = Q() & true" == true
 
     @test xl""" "L" & 10*3+3 & "t" """ == "L33t"
+
+    # Equality in string representation but not in expression itself
+    a = xlexpr"if(or(and(1,2),5, 6),foo(5), 0)"
+    b = :(if 1 && 2 || (5 || 6) foo(5) else 0 end)
+    @test string(Base.remove_linenums!(a)) == string(Base.remove_linenums!(b))
+
 end
