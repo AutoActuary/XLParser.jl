@@ -1,7 +1,7 @@
 name = "XLParser"
 uuid = "8d474f26-8d6e-4ad1-9e6a-3c288b8da8e7"
 authors = ["Simon streicher"]
-version = "0.1.0"
+version = "0.1.1"
 
 [compat]
 julia = "1"
