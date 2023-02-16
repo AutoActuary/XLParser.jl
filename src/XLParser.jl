@@ -4,7 +4,6 @@ export @xl_str
 export xlexpr
 
 using Tokenize
-using Espresso
 using MacroTools: MacroTools, @capture, postwalk
 
 # we bait and switch string concatenation (ampersand in xl) with the pipe

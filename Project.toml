@@ -1,7 +1,7 @@
 name = "XLParser"
 uuid = "8d474f26-8d6e-4ad1-9e6a-3c288b8da8e7"
 authors = ["Simon streicher"]
-version = "0.1.1"
+version = "0.2.0"
 
 [deps]
 MacroTools = "1914dd2f-81c6-5fcd-8719-6d5c9610ff09"
